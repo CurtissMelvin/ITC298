@@ -5,9 +5,9 @@
   var facade = {
     connection: null,
     init: function(callback) {
-        var db = new sqlite.Database("#.db");
+        var db = new sqlite.Database("ToDoList.db");
         facade.connection = db;
-        db.run("CREATE TABLE IF NOT EXISTS 'tablename' (tablecolumn(task),tablecolumn(complete))", function(){
+        db.run("CREATE TABLE IF NOT EXISTS 'Description', 'Date', 'Status')", function(){
           callback();
       });
     }
