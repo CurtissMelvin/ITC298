@@ -2,27 +2,31 @@
 
     var Backbone = require("backbone");
     var sql = require("../database");
-    var
 
-    var List = Backbone.Model.extend({
+
+    var ListCollection = Backbone.Model.extend({
       defaults: {
-        description: "",
-        date: "",
-        status: ""
+        id:"",
+        Description: "",
+        Date: "",
+        Status: ""
       },
 
       create: function(callback) {
           callback = callback || function() {};
-          //get its ownd database
-          var data = this.JSON();
+          //get its own database
+          var data = this.toJSON();
           //run an INSERT on the database
-          var q = "INSERT INTO list (description, date, status) VALUES ($description, $date, $status);";
+          var q = "INSERT INTO lists (description, date, status) VALUES ($description, $date, $status);";
           //pass in its database
           sql.connection.run(q, {
-            $description: data.task,
+            $description: data.description,
             $date: data.date,
             $status: data.status,
-          }, function() {
+          }, function(err) {
+            if (err) {
+              return callback(err);
+            }
             callback();
           });
     },
@@ -32,11 +36,21 @@
         //get a single  result
         sql.connection.get(q, {
           $id: this.get("id")
-        }, function(err, results) {
+        }, function(err, results){
           self.set(results);
           callback();
         });
+    },
+
+    loadall: function(callback) {
+      var self = this;
+      var q = "SELECT *  FROM lists";
+      sql.connection.all(q, function(err, results) {
+        self.set(results);
+        callback();
+      })
     }
+
 });
 
-module.exports = List;
+module.exports = ListCollection;
